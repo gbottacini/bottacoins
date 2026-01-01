@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botta Coins</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    font-family:Inter,sans-serif;
+    min-height:100vh;
+    background:
+      url("background.jpg") center/cover no-repeat fixed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+}
+
+/* POPUP */
+#popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.popup-box{
+    background:#020617;
+    padding:30px;
+    border-radius:22px;
+    width:90%;
+    max-width:360px;
+    text-align:center;
+    box-shadow:0 0 60px #000;
+}
+
+.popup-box h2{
+    font-family:Cinzel,serif;
+    color:#facc15;
+    margin-bottom:20px;
+}
+
+.popup-box button{
+    width:100%;
+    padding:16px;
+    margin-top:12px;
+    border:none;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.popup-box button:hover{
+    transform:scale(1.05);
+}
+
+.buy{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:#000;
+}
+
+.sell{
+    background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+    color:#000;
+}
+
+/* CARD */
+.card{
+    background:#020617;
+    padding:30px;
+    border-radius:24px;
+    width:92%;
+    max-width:420px;
+    box-shadow:0 0 70px #000;
+    display:none;
+}
+
+.logo{
+    font-family:Cinzel,serif;
+    text-align:center;
+    font-size:34px;
+    color:#facc15;
+}
+
+.sub{text-align:center;color:#94a3b8;margin-bottom:25px}
+
+label{display:block;margin-top:15px;margin-bottom:6px;font-weight:600}
+
+input[type=text]{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+}
+
+/* SLIDER */
+input[type=range]{
+    -webkit-appearance:none;
+    width:100%;
+    height:6px;
+    background:#22c55e;
+    border-radius:5px;
+}
+
+input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:42px;
+    height:42px;
+    background:url("coin.png") center/contain no-repeat;
+    cursor:pointer;
+}
+
+.info{margin-top:15px;font-size:16px}
+.info span{color:#22c55e;font-weight:700}
+
+.confirm{
+    margin-top:22px;
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+/* QR */
+#qrcodeBox{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.qrbox{
+    background:#020617;
+    padding:25px;
+    border-radius:22px;
+    width:90%;
+    max-width:360px;
+    text-align:center;
+}
+
+.qrbox h2{
+    font-family:Cinzel;
+    color:#facc15;
+}
+
+.whats{
+    margin-top:15px;
+    background:#25d366;
+    border:none;
+    padding:14px;
+    width:100%;
+    border-radius:14px;
+    font-weight:700;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- POPUP -->
+<div id="popup">
+  <div class="popup-box">
+    <h2>O que você deseja?</h2>
+    <button class="buy" onclick="start('buy')">Comprar Coins</button>
+    <button class="sell" onclick="start('sell')">Vender Coins</button>
+  </div>
+</div>
+
+<!-- CARD -->
+<div class="card" id="card">
+  <div class="logo">BOTTA COINS</div>
+  <div class="sub" id="mode"></div>
+
+  <label>Nick in-game</label>
+  <input id="nick" placeholder="Ex: Botta Knight">
+
+  <label>Quantidade de Coins</label>
+  <input type="range" id="coins" min="25" max="100000" step="25" value="25">
+
+  <div class="info">
+    Coins: <span id="c">25</span><br>
+    Valor: R$ <span id="v">0.00</span>
+  </div>
+
+  <button class="confirm" onclick="confirmar()">Confirmar</button>
+</div>
+
+<!-- QR -->
+<div id="qrcodeBox">
+  <div class="qrbox">
+    <h2>PIX</h2>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PIX_BOTTA_COINS">
+    <p id="resumo" style="margin-top:10px;font-size:14px"></p>
+    <button class="whats" onclick="whats()">Confirmar com atendente</button>
+  </div>
+</div>
+
+<script>
+let preco=89,tipo="Compra";
+
+function start(t){
+  popup.style.display="none";
+  card.style.display="block";
+  tipo=t==="buy"?"Compra":"Venda";
+  preco=t==="buy"?89:81;
+  mode.innerText=`${tipo} • R$ ${preco}/1k`;
+  update();
+}
+
+coins.oninput=update;
+
+function update(){
+  c.innerText=coins.value;
+  v.innerText=((coins.value/1000)*preco).toFixed(2);
+}
+
+function confirmar(){
+  if(!nick.value) return alert("Digite o nick");
+  const pedido={
+    data:new Date().toLocaleString(),
+    tipo,nick:nick.value,
+    coins:coins.value,
+    valor:v.innerText
+  };
+  const logs=JSON.parse(localStorage.getItem("logs")||"[]");
+  logs.push(pedido);
+  localStorage.setItem("logs",JSON.stringify(logs));
+
+  resumo.innerText=
+   `${tipo}\nNick: ${pedido.nick}\nCoins: ${pedido.coins}\nValor: R$ ${pedido.valor}`;
+
+  window.msg=encodeURIComponent(resumo.innerText);
+  qrcodeBox.style.display="flex";
+}
+
+function whats(){
+  window.open(`https://wa.me/SEUNUMERO?text=${window.msg}`);
+}
+</script>
+
+</body>
+</html>

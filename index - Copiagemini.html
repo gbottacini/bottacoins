@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botta Coins</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    font-family:Inter,sans-serif;
+    min-height:100vh;
+    background: url("background.jpg") center/cover no-repeat fixed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+}
+
+#popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.popup-box{
+    background:#020617;
+    padding:30px;
+    border-radius:22px;
+    width:90%;
+    max-width:360px;
+    text-align:center;
+    box-shadow:0 0 60px #000;
+}
+
+.popup-box h2{
+    font-family:Cinzel,serif;
+    color:#facc15;
+    margin-bottom:20px;
+}
+
+.popup-box button{
+    width:100%;
+    padding:16px;
+    margin-top:12px;
+    border:none;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.buy{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#000; }
+.sell{ background:linear-gradient(135deg,#38bdf8,#0ea5e9); color:#000; }
+
+.card{
+    background:#020617;
+    padding:30px;
+    border-radius:24px;
+    width:92%;
+    max-width:420px;
+    box-shadow:0 0 70px #000;
+    display:none;
+}
+
+.logo{
+    font-family:Cinzel,serif;
+    text-align:center;
+    font-size:34px;
+    color:#facc15;
+}
+
+.sub{text-align:center;color:#94a3b8;margin-bottom:25px}
+
+label{display:block;margin-top:15px;margin-bottom:10px;font-weight:600}
+
+/* SELETOR COM SETAS */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: 48px;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-step {
+    border: none;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.double-red { background-color: #f87171; }
+.single-red { background-color: #ef4444; }
+.single-green { background-color: #22c55e; }
+.double-green { background-color: #10b981; }
+
+/* CAMPO DE DIGITAÇÃO */
+#coinsDisplay {
+    width: 100px;
+    text-align: center;
+    border: none;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    background: #fff;
+    outline: none;
+}
+
+/* Esconder setinhas padrão do input number */
+#coinsDisplay::-webkit-inner-spin-button, 
+#coinsDisplay::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+/* BARRA DE ROLAGEM */
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 45px;
+    margin: 10px 0;
+}
+
+.track-bg {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.track-fill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 10px;
+    background: linear-gradient(to right, #facc15, #eab308);
+    border-radius: 5px;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+input[type=range] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    background: transparent;
+    z-index: 3;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 42px;
+    width: 42px;
+    background: url("coin.png") center/contain no-repeat;
+    border: none;
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 42px;
+    width: 42px;
+    background: url("coin.png") center/contain no-repeat;
+    border: none;
+}
+
+.info{margin-top:15px;font-size:16px}
+.info span{color:#22c55e;font-weight:700}
+
+.confirm{
+    margin-top:22px;
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+#qrcodeBox{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index: 20;
+}
+
+.qrbox{
+    background:#020617;
+    padding:25px;
+    border-radius:22px;
+    width:90%;
+    max-width:360px;
+    text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div id="popup">
+  <div class="popup-box">
+    <h2>O que você deseja?</h2>
+    <button class="buy" onclick="start('buy')">Comprar Coins</button>
+    <button class="sell" onclick="start('sell')">Vender Coins</button>
+  </div>
+</div>
+
+<div class="card" id="card">
+  <div class="logo">BOTTA COINS</div>
+  <div class="sub" id="mode"></div>
+
+  <label>Nick in-game</label>
+  <input type="text" id="nick" placeholder="Ex: Botta Knight" style="width:100%; padding:12px; border-radius:12px; border:none; margin-bottom:10px;">
+
+  <label>Quantidade de Coins</label>
+  
+  <div class="controls">
+    <button class="btn-step double-red" onclick="adjust(-250)">«</button>
+    <button class="btn-step single-red" onclick="adjust(-25)">‹</button>
+    <input type="number" id="coinsDisplay" value="25" oninput="manualInput()">
+    <button class="btn-step single-green" onclick="adjust(25)">›</button>
+    <button class="btn-step double-green" onclick="adjust(250)">»</button>
+  </div>
+  
+  <div class="slider-container">
+    <div class="track-bg"></div>
+    <div class="track-fill" id="fill"></div>
+    <input type="range" id="mainSlider" min="25" max="100000" step="25" value="25" oninput="syncSlider()">
+  </div>
+
+  <div class="info">
+    Coins: <span id="c">25</span><br>
+    Valor: R$ <span id="v">0.00</span>
+  </div>
+
+  <button class="confirm" onclick="confirmar()">Confirmar</button>
+</div>
+
+<div id="qrcodeBox">
+  <div class="qrbox">
+    <h2 style="font-family:Cinzel; color:#facc15;">PIX</h2>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PIX_BOTTA_COINS">
+    <p id="resumo" style="margin-top:10px;font-size:14px; white-space: pre-wrap; color: #fff;"></p>
+    <button class="confirm" style="background: #25d366;" onclick="whats()">Confirmar com atendente</button>
+  </div>
+</div>
+
+<script>
+let preco = 89, tipo = "Compra";
+const MIN = 25, MAX = 100000;
+
+function start(t){
+  document.getElementById("popup").style.display="none";
+  document.getElementById("card").style.display="block";
+  tipo = (t === "buy") ? "Compra" : "Venda";
+  preco = (t === "buy") ? 89 : 81;
+  document.getElementById("mode").innerText = `${tipo} • R$ ${preco}/1k`;
+  update(25);
+}
+
+// Quando o usuário digita manualmente
+function manualInput() {
+    let val = parseInt(document.getElementById("coinsDisplay").value);
+    
+    // Se o campo estiver vazio ou não for número, não faz nada até ele digitar
+    if (isNaN(val)) return;
+
+    // Limita o valor máximo enquanto digita
+    if (val > MAX) val = MAX;
+    
+    update(val, false); // false para não sobrescrever o que ele está digitando agora
+}
+
+// Quando mexe no slider (barra)
+function syncSlider() {
+    let val = document.getElementById("mainSlider").value;
+    update(val, true);
+}
+
+// Quando clica nas setas
+function adjust(amount) {
+    let val = parseInt(document.getElementById("mainSlider").value) + amount;
+    if (val < MIN) val = MIN;
+    if (val > MAX) val = MAX;
+    update(val, true);
+}
+
+function update(val, updateInputText){
+  // Sincroniza o slider
+  document.getElementById("mainSlider").value = val;
+  
+  // Sincroniza o visor de texto apenas se não for a própria digitação (para não atrapalhar o usuário)
+  if(updateInputText) {
+      document.getElementById("coinsDisplay").value = val;
+  }
+  
+  // Atualiza os textos de resumo e preço
+  document.getElementById("c").innerText = val;
+  document.getElementById("v").innerText = ((val / 1000) * preco).toFixed(2);
+
+  // Atualiza a barra visual
+  let percent = ((val - MIN) / (MAX - MIN)) * 100;
+  document.getElementById("fill").style.width = percent + "%";
+}
+
+function confirmar(){
+  let nick = document.getElementById("nick").value;
+  let qtd = parseInt(document.getElementById("coinsDisplay").value);
+
+  if(!nick) return alert("Digite o nick");
+  if(isNaN(qtd) || qtd < MIN) return alert(`A quantidade mínima é ${MIN} coins.`);
+
+  let resumoTxt = `${tipo}\nNick: ${nick}\nCoins: ${qtd}\nValor: R$ ${document.getElementById("v").innerText}`;
+  document.getElementById("resumo").innerText = resumoTxt;
+  window.msg = encodeURIComponent(resumoTxt);
+  document.getElementById("qrcodeBox").style.display="flex";
+}
+
+function whats(){
+  window.open(`https://wa.me/SEUNUMERO?text=${window.msg}`);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR" date_default_timezone_set('America/Sao_Paulo');>
+<head>
+<meta charset="UTF-8" >
+<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+<title>Botta Coins</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:Inter,sans-serif;
+    min-height:100vh;
+    background:url("background.jpg") center/cover no-repeat fixed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff
+}
+
+/* TOPO */
+#topBar{
+    position:fixed;
+    top:20px;
+    right:20px;
+    display:flex;
+    gap:10px;
+    z-index:100
+}
+.topBtn{
+    padding:10px 16px;
+    border-radius:12px;
+    border:1px solid #facc15;
+    background:transparent;
+    color:#facc15;
+    font-weight:700;
+    cursor:pointer
+}
+.topBtn:hover{background:#facc15;color:#000}
+
+/* MODAIS */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:200
+}
+.box{
+    background:#020617;
+    padding:30px;
+    border-radius:22px;
+    width:90%;
+    max-width:380px;
+    text-align:center
+}
+.box h2{
+    font-family:Cinzel;
+    color:#facc15;
+    margin-bottom:20px
+}
+.box input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    margin-bottom:10px
+}
+.box button{
+    width:100%;
+    padding:14px;
+    border-radius:14px;
+    border:none;
+    background:linear-gradient(135deg,#facc15,#eab308);
+    font-weight:800;
+    cursor:pointer
+}
+.box p{
+    margin-top:12px;
+    font-size:13px;
+    color:#94a3b8;
+    cursor:pointer
+}
+
+/* HISTÓRICO */
+#historico p{
+    background:#020617;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:14px
+}
+
+/* POPUP INICIAL */
+#popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:flex;
+    justify-content:center;
+    align-items:center
+}
+.popup-box{
+    background:#020617;
+    padding:30px;
+    border-radius:22px;
+    width:90%;
+    max-width:360px;
+    text-align:center
+}
+.popup-box h2{font-family:Cinzel;color:#facc15;margin-bottom:20px}
+.popup-box button{
+    width:100%;
+    padding:16px;
+    margin-top:12px;
+    border:none;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer
+}
+.buy{background:#22c55e;color:#000}
+.sell{background:#38bdf8;color:#000}
+
+/* CARD */
+.card{
+    background:#020617;
+    padding:30px;
+    border-radius:24px;
+    width:92%;
+    max-width:420px;
+    box-shadow:0 0 70px #000;
+    display:none
+}
+.logo{
+    font-family:Cinzel;
+    text-align:center;
+    font-size:32px;
+    color:#facc15
+}
+.sub{text-align:center;color:#94a3b8;margin-bottom:25px}
+label{display:block;margin-top:15px;margin-bottom:8px}
+input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none
+}
+
+/* CONTROLES */
+.controls {
+    display:flex;
+    height:48px;
+    margin:15px 0;
+    gap:8px; /* espaço entre os botões */
+    align-items:center;
+}
+.btn-step {
+    flex:1;
+    border:none;
+    color:#fff;
+    font-size:20px;
+    font-weight:bold;
+    border-radius:12px;
+    cursor:pointer;
+}
+.double-red{background:#f87171}
+.single-red{background:#ef4444}
+.single-green{background:#22c55e}
+.double-green{background:#10b981}
+
+#coinsDisplay{
+    width:60px;
+    text-align:center;
+    font-weight:700;
+    border-radius:12px;
+    border:none;
+}
+
+/* SLIDER */
+.slider-container{
+    position:relative;
+    height:40px;
+    margin-top:10px;
+}
+.track-bg{
+    position:absolute;
+    top:50%;
+    width:100%;
+    height:10px;
+    background:#333;
+    border-radius:5px;
+    transform:translateY(-50%);
+}
+.track-fill{
+    position:absolute;
+    top:50%;
+    height:10px;
+    background:#facc15;
+    border-radius:5px;
+    transform:translateY(-50%);
+}
+
+/* Slider com imagem da moeda */
+#mainSlider{
+    width:100%;
+    -webkit-appearance:none;
+    background:transparent;
+    position:relative;
+    z-index:2;
+}
+#mainSlider::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:32px;
+    height:32px;
+    background:url('moeda.png') no-repeat center center;
+    background-size:contain;
+    cursor:pointer;
+    border:none;
+    margin-top:-11px;
+}
+#mainSlider::-moz-range-thumb{
+    width:32px;
+    height:32px;
+    background:url('moeda.png') no-repeat center center;
+    background-size:contain;
+    cursor:pointer;
+    border:none;
+}
+
+/* BOTÃO */
+.confirm{
+    margin-top:20px;
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    background:#22c55e;
+    font-size:16px;
+    font-weight:800
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOPO -->
+<div id="topBar">
+    <button class="topBtn" id="btnLogin" onclick="abrirLogin()">Login</button>
+    <div id="loginErro" style="display:none;margin-top:10px;color:#ef4444;font-weight:600;text-align:center"></div>
+    <button class="topBtn" id="btnHistorico" onclick="abrirHistorico()" style="display:none">Histórico</button>
+    <a class="topBtn" id="btnAdmin" href="painel/admin.php" style="display:none">Painel ADM</a>
+</div>
+
+<!-- LOGIN -->
+<div id="loginModal" class="modal">
+  <div class="box">
+    <h2>Login</h2>
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginSenha" type="password" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    <p onclick="abrirCadastro()">Criar conta</p>
+    <div id="loginErro" style="display:none;margin-top:10px;color:#ef4444;font-weight:600;text-align:center"></div>
+	<button onclick="voltar()" style="margin-top:10px; background:#ef4444; color:#fff;">Voltar</button>
+  </div>
+</div>
+
+<!-- CADASTRO -->
+<div id="registerModal" class="modal">
+  <div class="box">
+    <h2>Criar Conta</h2>
+    <input id="regNome" placeholder="Nome">
+    <input id="regEmail" placeholder="Email">
+    <input id="regWhatsapp" placeholder="WhatsApp">
+    <input id="regSenha" type="password" placeholder="Senha">
+    <div id="registerErro" style="display:none;margin-top:10px;color:#ef4444;font-weight:600;text-align:center"></div>
+    <button onclick="register()">Cadastrar</button>
+    <button onclick="voltar()" style="margin-top:10px; background:#ef4444; color:#fff;">Voltar</button>
+  </div>
+</div>
+
+<!-- HISTÓRICO -->
+<div id="historicoModal" class="modal">
+  <div class="box">
+    <h2>Histórico</h2>
+    <div id="historico" style="margin-bottom:15px"></div>
+    <button onclick="fecharHistorico()" style="background:#444">Fechar</button>
+    <button onclick="logout()" style="background:#ef4444;color:#fff;margin-bottom:10px">Logout</button>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div id="popup">
+  <div class="popup-box">
+    <h2>O que deseja?</h2>
+    <button class="buy" onclick="start('Compra')">Comprar Coins</button>
+    <button class="sell" onclick="start('Venda')">Vender Coins</button>
+  </div>
+</div>
+
+<!-- CARD -->
+<div class="card" id="card">
+  <div class="logo">BOTTA COINS</div>
+  <div class="sub" id="mode"></div>
+
+  <label>Nick in-game</label>
+  <input id="nick">
+
+  <label>Quantidade</label>
+  <div class="controls">
+      <button class="btn-step double-red" onclick="adjust(-250)">«</button>
+      <button class="btn-step single-red" onclick="adjust(-25)">‹</button>
+      <input id="coinsDisplay" value="25" readonly>
+      <button class="btn-step single-green" onclick="adjust(25)">›</button>
+      <button class="btn-step double-green" onclick="adjust(250)">»</button>
+  </div>
+
+  <div class="slider-container">
+      <div class="track-bg"></div>
+      <div class="track-fill" id="fill"></div>
+      <input type="range" id="mainSlider" min="25" max="10000" step="25" value="25" oninput="syncSlider()">
+  </div>
+
+  <div>Coins: <b id="c">25</b><br>Valor: R$ <b id="v">0.00</b></div>
+  <button class="confirm" onclick="acaoPrincipal()">Confirmar</button>
+</div>
+
+<script>
+// --- Seu JS existente permanece inalterado ---
+var preco=89,tipo="Compra",MIN=25,MAX=10000;
+
+function abrirLogin(){document.getElementById("loginModal").style.display="flex"}
+function abrirCadastro(){document.getElementById("loginModal").style.display="none";document.getElementById("registerModal").style.display="flex"}
+function abrirHistorico(){document.getElementById("historicoModal").style.display="flex";carregarHistorico();}
+function fecharHistorico(){document.getElementById("historicoModal").style.display="none";}
+
+function fazerLogin(){
+    var email = document.getElementById("loginEmail").value;
+    var senha = document.getElementById("loginSenha").value;
+    fetch("painel/login.php",{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"email="+encodeURIComponent(email)+"&senha="+encodeURIComponent(senha)
+    }).then(function(res){ if(!res.ok) return res.text().then(function(msg){throw msg;}); return res.text(); })
+    .then(function(){ location.reload(); })
+    .catch(function(erro){ document.getElementById("loginErro").innerText = erro; document.getElementById("loginErro").style.display = "block"; });
+}
+
+function logout(){ fetch("painel/logout.php").then(()=>{ alert("Você saiu da sua conta"); location.reload(); }); }
+
+function register(){
+    const dados = { nome: regNome.value, email: regEmail.value, whatsapp: regWhatsapp.value, senha: regSenha.value };
+    fetch("painel/register.php", { method:"POST", headers:{'Content-Type':'application/json'}, body: JSON.stringify(dados) })
+    .then(res => res.json())
+    .then(data => {
+        const registerErro = document.getElementById("registerErro");
+        if(data.success){
+            registerErro.style.display = "none";
+            alert(data.message);
+            registerModal.style.display = "none";
+            regNome.value=""; regEmail.value=""; regWhatsapp.value=""; regSenha.value="";
+        } else { registerErro.innerText=data.message; registerErro.style.display="block"; }
+    })
+    .catch(err=>{ console.error(err); const registerErro=document.getElementById("registerErro"); registerErro.innerText="Erro no servidor. Tente novamente."; registerErro.style.display="block"; });
+}
+function voltar(){
+    document.getElementById("registerModal").style.display = "none";
+    document.getElementById("loginModal").style.display = "flex"; // volta para login
+}
+function carregarHistorico(){ fetch("painel/historico.php").then(r=>r.ok?r.json():[]).then(d=>{ historico.innerHTML=""; for(var i=0;i<d.length;i++){ historico.innerHTML+="<p>"+d[i].tipo+" • "+d[i].coins+" coins • R$ "+d[i].valor+" • "+d[i].status+"</p>"; } }); }
+
+function start(t){
+    fetch("painel/sessao.php")
+    .then(r => r.json())
+    .then(d => {
+        if(!d.logado){
+            // Se não estiver logado, abre o modal de login
+            abrirLogin();
+            alert("Você precisa estar logado para realizar essa ação.");
+        } else {
+            // Usuário logado, prossegue normalmente
+            tipo = t;
+            preco = (t == "Compra") ? 89 : 81;
+            popup.style.display = "none";
+            card.style.display = "block";
+            mode.innerHTML = t + " • R$ " + preco + "/1k";
+            update(25);
+        }
+    })
+    .catch(err => {
+        console.error("Erro ao verificar sessão:", err);
+        alert("Erro ao verificar sessão. Tente novamente.");
+    });
+}
+function adjust(v){ var n=parseInt(mainSlider.value)+v; if(n<MIN)n=MIN; if(n>MAX)n=MAX; update(n);}
+function syncSlider(){ update(mainSlider.value);}
+function update(v){ mainSlider.value=v; coinsDisplay.value=v; c.innerHTML=v; vTotal=((v/1000)*preco).toFixed(2); document.getElementById("v").innerHTML=vTotal; fill.style.width=((v-MIN)/(MAX-MIN))*100+"%";}
+function acaoPrincipal(){ 
+    const coins = c.innerHTML;
+    const valor = v.innerHTML;
+
+    // Envia o pedido para o servidor
+    fetch("painel/criar_pedido.php",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({tipo:tipo, coins: coins, valor: valor})
+    })
+    .then(()=>{
+        alert("Pedido registrado");
+
+        // Abre o WhatsApp da empresa
+        const telefone = "5514998049246"; // +55 (14) 99804-9246
+        const mensagem = encodeURIComponent(`Olá, gostaria de ${tipo.toLowerCase()} ${coins} coins no valor de R$ ${valor}.`);
+        window.open(`https://wa.me/${telefone}?text=${mensagem}`, "_blank");
+    });
+}
+
+function verificarSessao(){ fetch("painel/sessao.php").then(r=>r.json()).then(d=>{ if(d.logado){ document.getElementById("btnLogin").style.display = "none"; document.getElementById("btnHistorico").style.display = "inline-block"; if(d.nivel==="admin"){ document.getElementById("btnAdmin").style.display="inline-block"; } } }); }
+verificarSessao();
+</script>
+
+</body>
+</html>

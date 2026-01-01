@@ -1,0 +1,45 @@
+<?php
+header("Content-Type: application/json");
+
+$ACCESS_TOKEN = "SEU_ACCESS_TOKEN_DO_MERCADO_PAGO";
+
+$input = json_decode(file_get_contents("php://input"), true);
+
+$nick  = $input["nick"] ?? "";
+$valor = (float) $input["valor"];
+$coins = $input["coins"] ?? "";
+
+if (!$nick || $valor <= 0) {
+    echo json_encode(["error" => "Dados inválidos"]);
+    exit;
+}
+
+$payment = [
+    "transaction_amount" => $valor,
+    "description" => "$coins Coins para $nick",
+    "payment_method_id" => "pix",
+    "payer" => [
+        "email" => "cliente@teste.com"
+    ]
+];
+
+$ch = curl_init("https://api.mercadopago.com/v1/payments");
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => [
+        "Authorization: Bearer $ACCESS_TOKEN",
+        "Content-Type: application/json"
+    ],
+    CURLOPT_POSTFIELDS => json_encode($payment)
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+
+echo json_encode([
+    "payment_id" => $data["id"],
+    "qr_code_base64" => $data["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+]);

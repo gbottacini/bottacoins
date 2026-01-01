@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Admin • Botta Coins</title>
+<style>
+body{font-family:Arial;background:#020617;color:#fff;padding:20px}
+input,button{padding:10px;margin:5px}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #334155;padding:8px;text-align:center}
+th{background:#0f172a}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <h2>Login Admin</h2>
+  <input id="user" placeholder="Login"><br>
+  <input id="pass" type="password" placeholder="Senha"><br>
+  <button onclick="entrar()">Entrar</button>
+</div>
+
+<div id="painel" style="display:none">
+<h2>Pedidos</h2>
+<table>
+<tr><th>Data</th><th>Tipo</th><th>Nick</th><th>Coins</th><th>Valor</th></tr>
+<tbody id="logs"></tbody>
+</table>
+</div>
+
+<script>
+function entrar(){
+  if(user.value==="gbottacini98" && pass.value==="B@ttacini98"){
+    login.style.display="none";
+    painel.style.display="block";
+    carregar();
+  }else alert("Login inválido");
+}
+
+function carregar(){
+  const dados=JSON.parse(localStorage.getItem("logs")||"[]");
+  dados.forEach(l=>{
+    logs.innerHTML+=
+    `<tr><td>${l.data}</td><td>${l.tipo}</td><td>${l.nick}</td><td>${l.coins}</td><td>${l.valor}</td></tr>`;
+  });
+}
+</script>
+
+</body>
+</html>

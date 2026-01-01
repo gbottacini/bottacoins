@@ -1,0 +1,27 @@
+<?php
+header("Content-Type: application/json");
+
+$ACCESS_TOKEN = "SEU_ACCESS_TOKEN_DO_MERCADO_PAGO";
+$id = $_GET["id"] ?? "";
+
+if (!$id) {
+    echo json_encode(["status" => "error"]);
+    exit;
+}
+
+$ch = curl_init("https://api.mercadopago.com/v1/payments/$id");
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        "Authorization: Bearer $ACCESS_TOKEN"
+    ]
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+
+echo json_encode([
+    "status" => $data["status"] ?? "unknown"
+]);
